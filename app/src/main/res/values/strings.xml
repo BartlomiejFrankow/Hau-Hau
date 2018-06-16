@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Hau Hau</string>
     <string name="click_and_choose_your_records">Click and choose your records</string>
+    <string name="intent_application_recorded_file">application/pdf</string>
+    <string name="your_dog_likes_it">Your dog likes it ;)</string>
 </resources>

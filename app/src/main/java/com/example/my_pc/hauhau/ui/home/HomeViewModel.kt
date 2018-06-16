@@ -11,4 +11,5 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
     fun onListenButtonClick(){
         getNavigator().onListenButtonClick()
     }
+
 }

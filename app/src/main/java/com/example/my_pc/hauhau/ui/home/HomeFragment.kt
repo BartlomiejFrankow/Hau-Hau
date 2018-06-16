@@ -1,8 +1,15 @@
 package com.example.my_pc.hauhau.ui.home
 
+import android.Manifest
 import android.arch.lifecycle.ViewModelProviders
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
+import android.support.v4.app.ActivityCompat
 import android.view.View
+import android.widget.Toast
+import com.deskode.recorddialog.RecordDialog
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.commons.TransactionAnim
@@ -13,6 +20,8 @@ import com.example.my_pc.hauhau.utils.helpers.BuilderManager
 import com.github.fabtransitionactivity.SheetLayout
 import com.nightonke.boommenu.BoomButtons.HamButton
 import kotlinx.android.synthetic.main.fragment_home.*
+import java.io.File
+import java.io.FileOutputStream
 
 
 /**
@@ -25,6 +34,8 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
 
+    private val PICKFILE_REQUEST_CODE = 1
+
     companion object {
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -35,6 +46,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         super.onViewCreated(view, savedInstanceState)
         getBaseActivity().startPostponedEnterTransition()
         viewModel.setNavigator(this)
+
         bottom_sheet.setFab(fab)
         bottom_sheet.setFabAnimationEndListener(this)
 
@@ -50,25 +62,68 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         bottom_sheet.contractFab()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 0)
+        else return
+    }
+
     fun setUpBoomButton() {
         val builder = HamButton.Builder()
 
+        boom.isAutoHide = false
         for (i in 0 until boom.piecePlaceEnum.pieceNumber()) {
             builder.normalImageRes(R.drawable.ic_box_empty)
                     .normalColorRes(R.color.colorPrimaryDark)
-                    .listener { index ->
-                        boomButtonClick(index)
-                    }
+                    .listener { index -> checkPermissions(index) }
 
             boom.addBuilder(builder)
         }
     }
 
-    fun boomButtonClick(pos: Int){
+    private fun checkPermissions(index: Int) {
+        @RequiresApi(Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT > 22) {
+            if (activity?.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                if (activity?.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) recordFile(index)
+                else requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+            else requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        } else recordFile(index)
+    }
+
+    private fun recordFile(index: Int) {
+        //TODO There is a problem with getting applicationContext for recordDialog line 319 for android 5.0.1 (samsung S4) -- NEED TO FIX --
+
+        val recordDialog = RecordDialog.newInstance("Record Audio")
+        recordDialog.setMessage("Press for record")
+        recordDialog.show(getBaseActivity().getFragmentManager(), "TAG")
+        recordDialog.setPositiveButton("Save", RecordDialog.ClickListener {
+
+            val filePath = context?.getFilesDir()?.path.toString() + "/fileName.wav"
+            val media = File(filePath)
+            if (!media.exists()) {
+                media.createNewFile()
+                media.mkdir()
+            }
+
+            val fos = FileOutputStream(media)
+            fos.close()
+
+            Toast.makeText(getBaseActivity(), "Audio file saved", Toast.LENGTH_LONG).show()
+            fileRecorded(index)
+        })
+    }
+
+//    fun chooseRecordedFile(){
+//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+//        intent.type = getString(R.string.intent_application_recorded_file)
+//        startActivityForResult(intent, PICKFILE_REQUEST_CODE)
+//    }
+
+    fun fileRecorded(pos: Int){
         val boomButton = boom.getBoomButton(pos) ?: return
         boomButton.imageView?.setImageResource(BuilderManager.getImageResource())
-        boomButton.textView?.text = "I'm changed!"
-        boomButton.subTextView?.text = "I'm changed, too!"
+        boomButton.textView?.text = "Sample number added"
+        boomButton.subTextView?.text = getString(R.string.your_dog_likes_it)
     }
 
 }

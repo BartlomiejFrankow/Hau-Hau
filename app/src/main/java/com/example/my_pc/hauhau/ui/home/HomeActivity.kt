@@ -18,4 +18,5 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>() {
         addFragment(HomeFragment.newInstance(), false)
     }
 
+
 }
