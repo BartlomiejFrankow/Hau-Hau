@@ -5,8 +5,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.support.annotation.RequiresApi
-import android.support.v4.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
 import com.deskode.recorddialog.RecordDialog
@@ -59,7 +59,6 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
     override fun onFabAnimationEnd() {
         getBaseActivity().replaceFragment(ListenFragment.newInstance(), true, TransactionAnim.FADE_OUT_LONG)
-        bottom_sheet.contractFab()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -98,13 +97,11 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         recordDialog.show(getBaseActivity().getFragmentManager(), "TAG")
         recordDialog.setPositiveButton("Save", RecordDialog.ClickListener {
 
-            val filePath = context?.getFilesDir()?.path.toString() + "/fileName.wav"
-            val media = File(filePath)
-            if (!media.exists()) {
-                media.createNewFile()
-                media.mkdir()
-            }
+            val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+            if (!folder.exists()) folder.mkdirs()
 
+            //TODO need to add file directory to HauHau Records
+            val media = File(context?.filesDir?.path.toString() + "/HauHau Records/" + "file.wav")
             val fos = FileOutputStream(media)
             fos.close()
 
