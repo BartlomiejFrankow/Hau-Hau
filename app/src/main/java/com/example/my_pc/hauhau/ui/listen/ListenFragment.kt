@@ -26,6 +26,8 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_listenin
 
+    var mp =  MediaPlayer()
+
     companion object {
         fun newInstance(): ListenFragment {
             return ListenFragment()
@@ -52,12 +54,13 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
 
     @SuppressLint("SetTextI18n")
     override fun updateTvAndSetVoice() {
-        if(viewModel.soundDb(1.0) > 0.0) tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
-        if (viewModel.soundDb(1.0) > 60.0) audioPlayer(Environment.getExternalStorageDirectory().absolutePath, "20180617_194013.wav")
+        if(viewModel.soundDb(1.0).toInt() > 0.0) tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
+        if(viewModel.soundDb(1.0).toInt() > 70) playAudio(Environment.getExternalStorageDirectory().absolutePath, "20180617_211902.wav")
     }
 
-    fun audioPlayer(path : String, fileName : String){
-        val mp =  MediaPlayer()
+    fun playAudio(path : String, fileName : String){
+        if(mp.isPlaying) return
+        mp = MediaPlayer()
         mp.setDataSource(path + File.separator + fileName)
         mp.prepare()
         mp.start()

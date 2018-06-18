@@ -1,10 +1,8 @@
 package com.example.my_pc.hauhau.ui.listen
 
-import android.databinding.ObservableField
 import android.media.MediaRecorder
 import android.os.Handler
 import com.example.my_pc.hauhau.ui.base.BaseViewModel
-import com.example.my_pc.hauhau.ui.base.Message
 
 /**
  * Created by my_pc on 13/06/2018.
@@ -25,8 +23,9 @@ class ListenViewModel : BaseViewModel<ListenNavigator>(){
             runner = object : Thread() {
                 override fun run() {
                     while (runner != null) {
-                        try { sleep(200) }
+                        try { sleep(100) }
                         catch (e: InterruptedException) { }
+
                         mHandler.post(updater)
                     }
                 }
