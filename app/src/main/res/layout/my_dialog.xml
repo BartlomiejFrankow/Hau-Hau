@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialog_layout"
     android:layout_width="match_parent"
-    android:layout_height="210dp"
+    android:layout_height="190dp"
     android:layout_marginBottom="8dp"
     android:layout_marginEnd="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="8dp"
-    android:background="@color/white"
+    android:background="@drawable/my_dialog_white"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -18,11 +18,14 @@
     <ImageView
         android:id="@+id/iv_mic"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@color/colorAccent"
+        android:layout_height="70dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
         android:gravity="center"
+        android:paddingTop="10dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_mic" />
+        android:src="@drawable/ic_mic"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_dialog"
@@ -32,33 +35,46 @@
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
-        android:text="Press record icon to save your voice"
-        android:textColor="#ff000000"
+        android:text="@string/press_record_icon_to_save_your_voice"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_mic" />
 
 
-
     <Button
-        android:id="@+id/btn_dialog"
+        android:id="@+id/btn_save"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_below="@+id/text_dialog"
         android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/colorAccent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/my_button_blue"
         android:gravity="center_vertical|center_horizontal"
         android:text="Save"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_dialog"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@+id/text_dialog"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/my_button_blue"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="Cancel"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_dialog" />
+        app:layout_constraintTop_toBottomOf="@+id/text_dialog"
+        style="?android:attr/borderlessButtonStyle"/>
 
 
 </android.support.constraint.ConstraintLayout>

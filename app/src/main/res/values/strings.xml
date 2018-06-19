@@ -6,4 +6,5 @@
     <string name="preparing">Preparing...</string>
     <string name="dB"> dB</string>
     <string name="listening_stopped">Listening stopped...</string>
+    <string name="press_record_icon_to_save_your_voice">Press record icon to save your voice</string>
 </resources>

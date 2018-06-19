@@ -53,9 +53,6 @@ dependencies {
     //Boom Menu
     implementation 'com.nightonke:boommenu:2.1.1'
 
-    //Recording dialog
-    implementation 'com.github.IvanSotelo:RecordDialog:1.2.3'
-
     //FabTransition
     implementation 'com.github.coyarzun89:fabtransitionactivity:0.2.0'
 

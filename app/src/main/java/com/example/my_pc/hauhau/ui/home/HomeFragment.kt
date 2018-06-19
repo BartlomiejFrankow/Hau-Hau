@@ -93,8 +93,11 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         if (!folder.exists()) folder.mkdirs()
 
         val dialog = CustomDialog()
-        dialog.showDialog(getBaseActivity(), "Click at mic icon and record your voice", { viewModel.startRecorder() },{ viewModel.stopRecorder() })
-        fileRecorded(index)
+        dialog.showDialog(getBaseActivity(),
+                getString(R.string.press_record_icon_to_save_your_voice),
+                { viewModel.startRecorder() },
+                { viewModel.stopRecorder() },
+                {fileRecorded(index)})
     }
 
 //    fun chooseRecordedFile(){
