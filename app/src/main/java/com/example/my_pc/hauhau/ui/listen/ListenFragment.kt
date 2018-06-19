@@ -55,7 +55,7 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
     @SuppressLint("SetTextI18n")
     override fun updateTvAndSetVoice() {
         if(viewModel.soundDb(1.0).toInt() > 0.0) tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
-        if(viewModel.soundDb(1.0).toInt() > 70) playAudio(Environment.getExternalStorageDirectory().absolutePath, "20180617_211902.wav")
+        if(viewModel.soundDb(1.0).toInt() > 70) playAudio(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records", "recorded_file_1.wav")
     }
 
     fun playAudio(path : String, fileName : String){

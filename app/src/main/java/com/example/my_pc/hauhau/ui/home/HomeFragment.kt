@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.annotation.RequiresApi
 import android.view.View
-import android.widget.Toast
-import com.deskode.recorddialog.RecordDialog
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.commons.TransactionAnim
@@ -17,24 +15,24 @@ import com.example.my_pc.hauhau.databinding.FragmentHomeBinding
 import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.listen.ListenFragment
 import com.example.my_pc.hauhau.utils.helpers.BuilderManager
+import com.example.my_pc.hauhau.utils.helpers.CustomDialog
 import com.github.fabtransitionactivity.SheetLayout
 import com.nightonke.boommenu.BoomButtons.HamButton
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.io.File
-import java.io.FileOutputStream
 
 
 /**
  * Created by my_pc on 11/06/2018.
  */
 
-class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewModel>(), HomeNavigator, SheetLayout.OnFabAnimationEndListener{
+class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewModel>(), HomeNavigator, SheetLayout.OnFabAnimationEndListener {
 
     override fun provideViewModel(): HomeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
 
-    private val PICKFILE_REQUEST_CODE = 1
+//    private val PICKFILE_REQUEST_CODE = 1
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -54,7 +52,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     }
 
     override fun onListenButtonClick() {
-            bottom_sheet.expandFab()
+        bottom_sheet.expandFab()
     }
 
     override fun onFabAnimationEnd() {
@@ -91,23 +89,12 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
     private fun recordFile(index: Int) {
         //TODO There is a problem with getting applicationContext for recordDialog line 319 for android 5.0.1 (samsung S4) -- NEED TO FIX --
+        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        if (!folder.exists()) folder.mkdirs()
 
-        val recordDialog = RecordDialog.newInstance("Record Audio")
-        recordDialog.setMessage("Press for record")
-        recordDialog.show(getBaseActivity().getFragmentManager(), "TAG")
-        recordDialog.setPositiveButton("Save", RecordDialog.ClickListener {
-
-            val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
-            if (!folder.exists()) folder.mkdirs()
-
-            //TODO need to add file directory to HauHau Records
-            val media = File(context?.filesDir?.path.toString() + "/HauHau Records/" + "file.wav")
-            val fos = FileOutputStream(media)
-            fos.close()
-
-            Toast.makeText(getBaseActivity(), "Audio file saved", Toast.LENGTH_LONG).show()
-            fileRecorded(index)
-        })
+        val dialog = CustomDialog()
+        dialog.showDialog(getBaseActivity(), "Click at mic icon and record your voice", { viewModel.startRecorder() },{ viewModel.stopRecorder() })
+        fileRecorded(index)
     }
 
 //    fun chooseRecordedFile(){
@@ -116,7 +103,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 //        startActivityForResult(intent, PICKFILE_REQUEST_CODE)
 //    }
 
-    fun fileRecorded(pos: Int){
+    fun fileRecorded(pos: Int) {
         val boomButton = boom.getBoomButton(pos) ?: return
         boomButton.imageView?.setImageResource(BuilderManager.getImageResource())
         boomButton.textView?.text = "Sample number added"

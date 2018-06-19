@@ -76,6 +76,20 @@
             app:ft_container_gravity="center"
             android:elevation="2dp"/>
 
+        <TextView
+            android:id="@+id/tv_listen_your_dog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Click to listen your dog"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fab" />
+
     </android.support.constraint.ConstraintLayout>
 
 </layout>

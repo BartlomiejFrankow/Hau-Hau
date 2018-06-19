@@ -1,6 +1,7 @@
 package com.example.my_pc.hauhau.ui.listen
 
 import android.media.MediaRecorder
+import android.os.Environment
 import android.os.Handler
 import com.example.my_pc.hauhau.ui.base.BaseViewModel
 
@@ -36,10 +37,13 @@ class ListenViewModel : BaseViewModel<ListenNavigator>(){
 
     fun startRecorder() {
         if (mRecorder == null) {
+//            var mFileName = Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records"
+//            mFileName += "/audiorecordtest.wav"
             mRecorder = MediaRecorder()
             mRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             mRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+//            mRecorder!!.setOutputFile(mFileName)
             mRecorder!!.setOutputFile("/dev/null")
             mRecorder!!.prepare()
             mRecorder!!.start()
