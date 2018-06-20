@@ -36,6 +36,7 @@ class CustomDialog {
         text.text = msg
 
         val btnSave = dialog.findViewById(R.id.btn_save) as Button
+        btnSave.visibility = View.GONE
         btnSave.setOnClickListener {
             dialog.dismiss()
             stopRecording()
@@ -53,6 +54,7 @@ class CustomDialog {
             btnCancel.visibility = View.GONE
             startRecording()
             dialogMicImage.setImageResource(R.drawable.ic_mic_recording)
+            btnSave.visibility = View.VISIBLE
         }
 
         dialog.show()

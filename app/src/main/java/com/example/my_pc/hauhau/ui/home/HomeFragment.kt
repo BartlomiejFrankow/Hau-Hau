@@ -17,9 +17,12 @@ import com.example.my_pc.hauhau.ui.listen.ListenFragment
 import com.example.my_pc.hauhau.utils.helpers.BuilderManager
 import com.example.my_pc.hauhau.utils.helpers.CustomDialog
 import com.github.fabtransitionactivity.SheetLayout
+import com.nightonke.boommenu.BoomButtons.BoomButton
 import com.nightonke.boommenu.BoomButtons.HamButton
+import com.nightonke.boommenu.OnBoomListener
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.io.File
+import java.util.*
 
 
 /**
@@ -31,8 +34,6 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun provideViewModel(): HomeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
-
-//    private val PICKFILE_REQUEST_CODE = 1
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -64,31 +65,77 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         else return
     }
 
+    private fun normalBoomChild() = HamButton.Builder().normalColorRes(R.color.colorPrimaryDark).normalImageRes(R.drawable.ic_box_empty).normalText(getString(R.string.record_new_file))
+    private fun deleteBoomChild() = HamButton.Builder().normalColorRes(R.color.red).normalImageRes(R.drawable.ic_delete).normalText(getString(R.string.delete_files))
+
     fun setUpBoomButton() {
-        val builder = HamButton.Builder()
-
         boom.isAutoHide = false
-        for (i in 0 until boom.piecePlaceEnum.pieceNumber()) {
-            builder.normalImageRes(R.drawable.ic_box_empty)
-                    .normalColorRes(R.color.colorPrimaryDark)
-                    .listener { index -> checkPermissions(index) }
+        boom.addBuilder(normalBoomChild().listener { checkPermissions(0) })
+        boom.addBuilder(normalBoomChild().listener { checkPermissions(1) })
+        boom.addBuilder(normalBoomChild().listener { checkPermissions(2) })
+        boom.addBuilder(normalBoomChild().listener { checkPermissions(3) })
+        boom.addBuilder(normalBoomChild().listener { checkPermissions(4) })
+        boom.addBuilder(deleteBoomChild().listener {
+            //TODO delete all files from folder
+        })
 
-            boom.addBuilder(builder)
+        boom.onBoomListener = object : OnBoomListener {
+            override fun onBoomDidShow() {
+                checkHowManyRecordedFilesUserHave()
+            }
+
+            override fun onClicked(index: Int, boomButton: BoomButton?) {}
+            override fun onBackgroundClick() {}
+            override fun onBoomDidHide() {}
+            override fun onBoomWillHide() {}
+            override fun onBoomWillShow() {}
         }
+    }
+
+    private fun checkHowManyRecordedFilesUserHave() {
+        var recordsList = getAllFilesFromRecordFolder()
+        if (recordsList.size == 1) {
+            fileRecorded(0)
+        } else if (recordsList.size == 2) {
+            fileRecorded(0)
+            fileRecorded(1)
+        } else if (recordsList.size == 3) {
+            fileRecorded(0)
+            fileRecorded(1)
+            fileRecorded(2)
+        } else if (recordsList.size == 4) {
+            fileRecorded(0)
+            fileRecorded(1)
+            fileRecorded(2)
+            fileRecorded(3)
+        } else if (recordsList.size == 5) {
+            fileRecorded(0)
+            fileRecorded(1)
+            fileRecorded(2)
+            fileRecorded(3)
+            fileRecorded(4)
+        }
+    }
+
+    private fun getAllFilesFromRecordFolder(): ArrayList<File> {
+        val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        val files = path.listFiles()
+        val recordsList = ArrayList<File>()
+        Collections.addAll(recordsList, *files)
+        return recordsList
     }
 
     private fun checkPermissions(index: Int) {
         @RequiresApi(Build.VERSION_CODES.M)
         if (Build.VERSION.SDK_INT > 22) {
             if (activity?.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-                if (activity?.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) recordFile(index)
+                if (activity?.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) openRecordDialog(index)
                 else requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1)
             else requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-        } else recordFile(index)
+        } else openRecordDialog(index)
     }
 
-    private fun recordFile(index: Int) {
-        //TODO There is a problem with getting applicationContext for recordDialog line 319 for android 5.0.1 (samsung S4) -- NEED TO FIX --
+    private fun openRecordDialog(index: Int) {
         val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
         if (!folder.exists()) folder.mkdirs()
 
@@ -97,20 +144,15 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
                 getString(R.string.press_record_icon_to_save_your_voice),
                 { viewModel.startRecorder() },
                 { viewModel.stopRecorder() },
-                {fileRecorded(index)})
+                { fileRecorded(index) })
     }
-
-//    fun chooseRecordedFile(){
-//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-//        intent.type = getString(R.string.intent_application_recorded_file)
-//        startActivityForResult(intent, PICKFILE_REQUEST_CODE)
-//    }
 
     fun fileRecorded(pos: Int) {
         val boomButton = boom.getBoomButton(pos) ?: return
         boomButton.imageView?.setImageResource(BuilderManager.getImageResource())
-        boomButton.textView?.text = "Sample number added"
+        boomButton.textView?.text = getString(R.string.sample_added)
         boomButton.subTextView?.text = getString(R.string.your_dog_likes_it)
+        boomButton.isClickable = false
     }
 
 }

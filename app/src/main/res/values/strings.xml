@@ -7,4 +7,7 @@
     <string name="dB"> dB</string>
     <string name="listening_stopped">Listening stopped...</string>
     <string name="press_record_icon_to_save_your_voice">Press record icon to save your voice</string>
+    <string name="record_new_file">Record new file</string>
+    <string name="delete_files">Delete all recorded files</string>
+    <string name="sample_added">Sample record added</string>
 </resources>
