@@ -14,6 +14,7 @@ import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.home.HomeActivity
 import kotlinx.android.synthetic.main.fragment_listenin.*
 import java.io.File
+import java.util.*
 import kotlin.math.roundToInt
 
 /**
@@ -54,8 +55,17 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
 
     @SuppressLint("SetTextI18n")
     override fun updateTvAndSetVoice() {
+        val recordsList = recordFilesList()
         if(viewModel.soundDb(1.0).toInt() > 0.0) tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
-        if(viewModel.soundDb(1.0).toInt() > 70) playAudio(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records", "recorded_file_1.wav")
+        if(viewModel.soundDb(1.0).toInt() > 70) playAudio("", recordsList[Random().nextInt(recordsList.size)].toString())
+    }
+
+    private fun recordFilesList(): ArrayList<File> {
+        val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        val files = path.listFiles()
+        val recordsList = ArrayList<File>()
+        Collections.addAll(recordsList, *files)
+        return recordsList
     }
 
     fun playAudio(path : String, fileName : String){

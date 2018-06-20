@@ -19,7 +19,7 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
     fun startRecorder() {
         if (mRecorder == null) {
             var mFileName = Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records"
-            mFileName += "/recorded_file_1.wav"
+            mFileName += "/recorded_file_3.wav"
             mRecorder = MediaRecorder()
             mRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
