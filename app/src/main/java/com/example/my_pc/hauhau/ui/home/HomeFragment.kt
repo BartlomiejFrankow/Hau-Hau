@@ -21,6 +21,7 @@ import com.nightonke.boommenu.BoomButtons.BoomButton
 import com.nightonke.boommenu.BoomButtons.HamButton
 import com.nightonke.boommenu.OnBoomListener
 import kotlinx.android.synthetic.main.fragment_home.*
+import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.*
 
@@ -34,6 +35,8 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun provideViewModel(): HomeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
+
+    var isRecordsFolderEmpty = false
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -76,7 +79,10 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         boom.addBuilder(normalBoomChild().listener { checkPermissions(3) })
         boom.addBuilder(normalBoomChild().listener { checkPermissions(4) })
         boom.addBuilder(deleteBoomChild().listener {
-            //TODO delete all files from folder
+            val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+            FileUtils.deleteDirectory(path)
+            isRecordsFolderEmpty = true
+            fileDeleted()
         })
 
         boom.onBoomListener = object : OnBoomListener {
@@ -118,10 +124,14 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     }
 
     private fun getAllFilesFromRecordFolder(): ArrayList<File> {
+        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        if (!folder.exists()) folder.mkdirs()
+
         val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
         val files = path.listFiles()
         val recordsList = ArrayList<File>()
-        Collections.addAll(recordsList, *files)
+        if (!isRecordsFolderEmpty) Collections.addAll(recordsList, *files)
+
         return recordsList
     }
 
@@ -136,9 +146,6 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     }
 
     private fun openRecordDialog(index: Int) {
-        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
-        if (!folder.exists()) folder.mkdirs()
-
         val dialog = CustomDialog()
         dialog.showDialog(getBaseActivity(),
                 getString(R.string.press_record_icon_to_save_your_voice),
@@ -154,5 +161,17 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         boomButton.subTextView?.text = getString(R.string.your_dog_likes_it)
         boomButton.isClickable = false
     }
+
+    fun fileDeleted() {
+        for (i in 0 until boom.piecePlaceEnum.pieceNumber() - 1) {
+            val boomButton = boom.getBoomButton(i) ?: return
+            boomButton.imageView?.setImageResource(R.drawable.ic_box_empty)
+            boomButton.textView?.text = getString(R.string.record_new_file)
+            boomButton.subTextView?.text = ""
+            boomButton.isClickable = true
+        }
+
+    }
+
 
 }
