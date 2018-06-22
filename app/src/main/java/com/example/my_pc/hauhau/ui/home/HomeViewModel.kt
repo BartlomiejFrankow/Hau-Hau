@@ -4,6 +4,7 @@ import android.media.MediaRecorder
 import android.os.Environment
 import com.example.my_pc.hauhau.ui.base.BaseViewModel
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 /**
@@ -20,7 +21,13 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
 
     fun startRecorder() {
         if (mRecorder == null) {
-            var fileNumber = setRecordedFileNumber()
+            var recordsList = getAllFilesFromRecordFolder()
+            var fileNumber = ""
+            if (recordsList.size == 1) fileNumber = "1"
+            else if (recordsList.size == 2) fileNumber = "2"
+            else if (recordsList.size == 3) fileNumber = "3"
+            else if (recordsList.size == 4) fileNumber = "4"
+            else if (recordsList.size == 5) fileNumber = "5"
 
             var mFileName = Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records"
             mFileName += "/recorded_file_$fileNumber.wav"
@@ -47,18 +54,8 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
         val files = path.listFiles()
         val recordsList = ArrayList<File>()
         Collections.addAll(recordsList, *files)
-        return recordsList
-    }
 
-    private fun setRecordedFileNumber(): String {
-        var recordsList = getAllFilesFromRecordFolder()
-        var fileNumber = ""
-        if (recordsList.size == 0) fileNumber = "1"
-        else if (recordsList.size == 1) fileNumber = "2"
-        else if (recordsList.size == 2) fileNumber = "3"
-        else if (recordsList.size == 3) fileNumber = "4"
-        else if (recordsList.size == 4) fileNumber = "5"
-        return fileNumber
+        return recordsList
     }
 
 }

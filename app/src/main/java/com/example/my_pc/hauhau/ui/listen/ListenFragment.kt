@@ -57,7 +57,7 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
     override fun updateTvAndSetVoice() {
         val recordsList = recordFilesList()
         if(viewModel.soundDb(1.0).toInt() > 0.0) tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
-        if(viewModel.soundDb(1.0).toInt() > 70) playAudio("", recordsList[Random().nextInt(recordsList.size)].toString())
+        if(viewModel.soundDb(1.0).toInt() > 70) playAudio("", recordsList[Random().nextInt(recordsList.size - 1) + 1].toString())
     }
 
     private fun recordFilesList(): ArrayList<File> {

@@ -8,13 +8,13 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.annotation.RequiresApi
 import android.view.View
+import android.widget.Toast
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.commons.TransactionAnim
 import com.example.my_pc.hauhau.databinding.FragmentHomeBinding
 import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.listen.ListenFragment
-import com.example.my_pc.hauhau.utils.helpers.BuilderManager
 import com.example.my_pc.hauhau.utils.helpers.CustomDialog
 import com.github.fabtransitionactivity.SheetLayout
 import com.nightonke.boommenu.BoomButtons.BoomButton
@@ -23,6 +23,7 @@ import com.nightonke.boommenu.OnBoomListener
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.apache.commons.io.FileUtils
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 
@@ -35,8 +36,6 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun provideViewModel(): HomeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
-
-    var isRecordsFolderEmpty = false
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -51,12 +50,15 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
         bottom_sheet.setFab(fab)
         bottom_sheet.setFabAnimationEndListener(this)
+        createHauHauFolder()
 
         setUpBoomButton()
     }
 
     override fun onListenButtonClick() {
-        bottom_sheet.expandFab()
+        var recordsList = getAllFilesFromRecordFolder()
+        if (recordsList.size == 1) Toast.makeText(getBaseActivity(), "You need to add your records first", Toast.LENGTH_LONG).show()
+        else bottom_sheet.expandFab()
     }
 
     override fun onFabAnimationEnd() {
@@ -81,15 +83,12 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         boom.addBuilder(deleteBoomChild().listener {
             val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
             FileUtils.deleteDirectory(path)
-            isRecordsFolderEmpty = true
             fileDeleted()
+            createHauHauFolder()
         })
 
         boom.onBoomListener = object : OnBoomListener {
-            override fun onBoomDidShow() {
-                checkHowManyRecordedFilesUserHave()
-            }
-
+            override fun onBoomDidShow() { checkHowManyRecordedFilesUserHave() }
             override fun onClicked(index: Int, boomButton: BoomButton?) {}
             override fun onBackgroundClick() {}
             override fun onBoomDidHide() {}
@@ -100,21 +99,22 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
     private fun checkHowManyRecordedFilesUserHave() {
         var recordsList = getAllFilesFromRecordFolder()
-        if (recordsList.size == 1) {
+        //First file is - First file.txt
+        if (recordsList.size == 2) {
             fileRecorded(0)
-        } else if (recordsList.size == 2) {
-            fileRecorded(0)
-            fileRecorded(1)
         } else if (recordsList.size == 3) {
             fileRecorded(0)
             fileRecorded(1)
-            fileRecorded(2)
         } else if (recordsList.size == 4) {
             fileRecorded(0)
             fileRecorded(1)
             fileRecorded(2)
-            fileRecorded(3)
         } else if (recordsList.size == 5) {
+            fileRecorded(0)
+            fileRecorded(1)
+            fileRecorded(2)
+            fileRecorded(3)
+        } else if (recordsList.size == 6) {
             fileRecorded(0)
             fileRecorded(1)
             fileRecorded(2)
@@ -124,15 +124,23 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     }
 
     private fun getAllFilesFromRecordFolder(): ArrayList<File> {
-        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
-        if (!folder.exists()) folder.mkdirs()
-
+        createHauHauFolder()
         val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
         val files = path.listFiles()
         val recordsList = ArrayList<File>()
-        if (!isRecordsFolderEmpty) Collections.addAll(recordsList, *files)
+        Collections.addAll(recordsList, *files)
 
         return recordsList
+    }
+
+    private fun createHauHauFolder() {
+        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        if (!folder.exists()) {
+            folder.mkdirs()
+            val outputFile = File(folder, "First file.txt")
+            val fos = FileOutputStream(outputFile)
+            fos.close()
+        }
     }
 
     private fun checkPermissions(index: Int) {
@@ -156,7 +164,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
     fun fileRecorded(pos: Int) {
         val boomButton = boom.getBoomButton(pos) ?: return
-        boomButton.imageView?.setImageResource(BuilderManager.getImageResource())
+        boomButton.imageView?.setImageResource(R.drawable.ic_box_full)
         boomButton.textView?.text = getString(R.string.sample_added)
         boomButton.subTextView?.text = getString(R.string.your_dog_likes_it)
         boomButton.isClickable = false
