@@ -1,33 +1,39 @@
 package com.example.my_pc.hauhau.ui.listen
 
+import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Environment
 import android.os.Handler
 import com.example.my_pc.hauhau.ui.base.BaseViewModel
+import java.io.File
+import java.util.*
 
 /**
- * Created by my_pc on 13/06/2018.
+ * Created by Bartlomie_Frankow on 11/06/2018.
  */
 
-class ListenViewModel : BaseViewModel<ListenNavigator>(){
+class ListenViewModel : BaseViewModel<ListenNavigator>() {
 
-    var mRecorder: MediaRecorder? = null
+    private var mRecorder: MediaRecorder? = null
     var runner: Thread? = null
-    private var mEMA = 0.0
-    private val EMA_FILTER = 0.6
-    val mHandler = Handler()
-
-    val updater: Runnable = Runnable { getNavigator().updateTvAndSetVoice() }
+    private var ema = 0.0
+    private val emaFilter = 0.6
+    private var mp = MediaPlayer()
+    val handler = Handler()
+    val updater: Runnable = Runnable { voiceReaction() }
 
     fun runnerSetUp() {
         if (runner == null) {
             runner = object : Thread() {
                 override fun run() {
                     while (runner != null) {
-                        try { sleep(100) }
-                        catch (e: InterruptedException) { }
+                        try {
+                            sleep(100)
+                        } catch (e: InterruptedException) {
+                        }
 
-                        mHandler.post(updater)
+                        handler.post(updater)
                     }
                 }
             }
@@ -55,19 +61,43 @@ class ListenViewModel : BaseViewModel<ListenNavigator>(){
         }
     }
 
-    fun soundDb(ampl: Double): Double {
-        return 20 * Math.log10(getAmplitudeEMA() / ampl)
+    fun soundDb(amplitude: Double): Double {
+        return 20 * Math.log10(getAmplitudeEMA() / amplitude)
     }
 
-    fun getAmplitude(): Double {
-        return if (mRecorder != null) mRecorder!!.getMaxAmplitude().toDouble()
+    private fun getAmplitude(): Double {
+        return if (mRecorder != null) mRecorder!!.maxAmplitude.toDouble()
         else 0.0
     }
 
-    fun getAmplitudeEMA(): Double {
-        val amp = getAmplitude()
-        mEMA = EMA_FILTER * amp + (1.0 - EMA_FILTER) * mEMA
-        return mEMA
+    private fun getAmplitudeEMA(): Double {
+        val amplitude = getAmplitude()
+        ema = emaFilter * amplitude + (1.0 - emaFilter) * ema
+        return ema
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun voiceReaction() {
+        val recordsList = recordFilesList()
+        if (soundDb(1.0).toInt() > 0.0) getNavigator().updateTexts()
+        if (soundDb(1.0).toInt() > 68) playAudio("", recordsList[Random().nextInt(recordsList.size - 1) + 1].toString())
+    }
+
+    private fun recordFilesList(): ArrayList<File> {
+        val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        val files = path.listFiles()
+        val recordsList = ArrayList<File>()
+        Collections.addAll(recordsList, *files)
+
+        return recordsList
+    }
+
+    private fun playAudio(path: String, fileName: String) {
+        if (mp.isPlaying) return
+        mp = MediaPlayer()
+        mp.setDataSource(path + File.separator + fileName)
+        mp.prepare()
+        mp.start()
     }
 
 }

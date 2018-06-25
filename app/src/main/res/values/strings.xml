@@ -10,4 +10,10 @@
     <string name="record_new_file">Record new file</string>
     <string name="delete_files">Delete all recorded files</string>
     <string name="sample_added">Sample record added</string>
+    <string name="add_records">You need to add your records first</string>
+    <string name="click_to_listen_your_dog">Click to listen your dog</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="if_sound_will_be_to_loud_app_will_react_by_playing_your_records_randomly">If sound will be to loud app will react by playing your records randomly</string>
+    <string name="listening">Listening...</string>
 </resources>

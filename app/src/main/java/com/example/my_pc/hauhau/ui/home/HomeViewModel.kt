@@ -8,12 +8,12 @@ import java.io.FileOutputStream
 import java.util.*
 
 /**
- * Created by my_pc on 11/06/2018.
+ * Created by Bartlomie_Frankow on 11/06/2018.
  */
 
 class HomeViewModel : BaseViewModel<HomeNavigator>() {
 
-    fun onListenButtonClick(){
+    fun onListenButtonClick() {
         getNavigator().onListenButtonClick()
     }
 
@@ -21,14 +21,7 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
 
     fun startRecorder() {
         if (mRecorder == null) {
-            var recordsList = getAllFilesFromRecordFolder()
-            var fileNumber = ""
-            if (recordsList.size == 1) fileNumber = "1"
-            else if (recordsList.size == 2) fileNumber = "2"
-            else if (recordsList.size == 3) fileNumber = "3"
-            else if (recordsList.size == 4) fileNumber = "4"
-            else if (recordsList.size == 5) fileNumber = "5"
-
+            val fileNumber = setFileNumber()
             var mFileName = Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records"
             mFileName += "/recorded_file_$fileNumber.wav"
             mRecorder = MediaRecorder()
@@ -41,6 +34,19 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
         }
     }
 
+    private fun setFileNumber(): String {
+        val recordsList = getAllFilesFromRecordFolder()
+        var fileNumber = ""
+        when {
+            recordsList.size == 1 -> fileNumber = "1"
+            recordsList.size == 2 -> fileNumber = "2"
+            recordsList.size == 3 -> fileNumber = "3"
+            recordsList.size == 4 -> fileNumber = "4"
+            recordsList.size == 5 -> fileNumber = "5"
+        }
+        return fileNumber
+    }
+
     fun stopRecorder() {
         if (mRecorder != null) {
             mRecorder!!.stop()
@@ -49,13 +55,23 @@ class HomeViewModel : BaseViewModel<HomeNavigator>() {
         }
     }
 
-    private fun getAllFilesFromRecordFolder(): ArrayList<File> {
+    fun getAllFilesFromRecordFolder(): ArrayList<File> {
         val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
         val files = path.listFiles()
         val recordsList = ArrayList<File>()
         Collections.addAll(recordsList, *files)
 
         return recordsList
+    }
+
+    fun createHauHauFolder() {
+        val folder = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        if (!folder.exists()) {
+            folder.mkdirs()
+            val outputFile = File(folder, "First file.txt")
+            val fos = FileOutputStream(outputFile)
+            fos.close()
+        }
     }
 
 }

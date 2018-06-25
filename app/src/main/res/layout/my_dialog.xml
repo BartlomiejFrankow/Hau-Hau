@@ -54,7 +54,7 @@
         android:layout_marginTop="40dp"
         android:background="@drawable/my_button_blue"
         android:gravity="center_vertical|center_horizontal"
-        android:text="Save"
+        android:text="@string/save"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_dialog" />
@@ -69,7 +69,7 @@
         android:layout_marginTop="40dp"
         android:background="@drawable/my_button_blue"
         android:gravity="center_vertical|center_horizontal"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_dialog" />
