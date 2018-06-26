@@ -29,9 +29,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>() {
     override fun onBackPressed() {
         if (exit) {
             finishAndRemoveTask()
-            finishAffinity()
-        }
-        else {
+            android.os.Process.killProcess(android.os.Process.myPid())
+        } else {
             Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_LONG).show()
             exit = true
             Handler().postDelayed({ exit = false }, (3 * 1000).toLong())
