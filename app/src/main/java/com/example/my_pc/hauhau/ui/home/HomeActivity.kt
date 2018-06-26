@@ -3,11 +3,11 @@ package com.example.my_pc.hauhau.ui.home
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
-import android.widget.Toast
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.databinding.ActivityHomeBinding
 import com.example.my_pc.hauhau.ui.base.BaseActivity
+import com.example.my_pc.hauhau.utils.helpers.CustomToast
 
 /**
  * Created by Bartlomie_Frankow on 11/06/2018.
@@ -31,7 +31,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>() {
             finishAndRemoveTask()
             android.os.Process.killProcess(android.os.Process.myPid())
         } else {
-            Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_LONG).show()
+            val customToast = CustomToast()
+            customToast.showWhiteToast(this, R.string.press_back_again)
             exit = true
             Handler().postDelayed({ exit = false }, (3 * 1000).toLong())
         }

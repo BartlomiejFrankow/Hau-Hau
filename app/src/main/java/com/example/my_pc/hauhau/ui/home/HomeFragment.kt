@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.annotation.RequiresApi
 import android.view.View
-import android.widget.Toast
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.commons.TransactionAnim
@@ -16,6 +15,7 @@ import com.example.my_pc.hauhau.databinding.FragmentHomeBinding
 import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.listen.ListenFragment
 import com.example.my_pc.hauhau.utils.helpers.CustomDialog
+import com.example.my_pc.hauhau.utils.helpers.CustomToast
 import com.github.fabtransitionactivity.SheetLayout
 import com.nightonke.boommenu.BoomButtons.BoomButton
 import com.nightonke.boommenu.BoomButtons.HamButton
@@ -33,6 +33,8 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun provideViewModel(): HomeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
+
+    val customToast = CustomToast()
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -53,7 +55,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
 
     override fun onListenButtonClick() {
         val recordsList = viewModel.getAllFilesFromRecordFolder()
-        if (recordsList.size == 1) Toast.makeText(getBaseActivity(), getString(R.string.add_records), Toast.LENGTH_LONG).show()
+        if (recordsList.size == 1) { customToast.showWhiteToast(getBaseActivity(), R.string.add_records) }
         else bottom_sheet.expandFab()
     }
 
@@ -76,18 +78,10 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         boom.addBuilder(normalBoomChild().listener { checkPermissions(2) })
         boom.addBuilder(normalBoomChild().listener { checkPermissions(3) })
         boom.addBuilder(normalBoomChild().listener { checkPermissions(4) })
-        boom.addBuilder(deleteBoomChild().listener {
-            val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
-            FileUtils.deleteDirectory(path)
-            fileDeleted()
-            viewModel.createHauHauFolder()
-        })
+        boom.addBuilder(deleteBoomChild().listener { deleteFIlesWithInformation() })
 
         boom.onBoomListener = object : OnBoomListener {
-            override fun onBoomDidShow() {
-                checkHowManyRecordedFilesUserHave()
-            }
-
+            override fun onBoomDidShow() { checkHowManyRecordedFilesUserHave() }
             override fun onClicked(index: Int, boomButton: BoomButton?) {}
             override fun onBackgroundClick() {}
             override fun onBoomDidHide() {}
@@ -96,13 +90,18 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
         }
     }
 
+    private fun deleteFIlesWithInformation() {
+        val path = File(Environment.getExternalStorageDirectory().absolutePath + "/HauHau Records")
+        customToast.showWhiteToast(getBaseActivity(), R.string.files_deleted)
+        FileUtils.deleteDirectory(path)
+        fileDeleted()
+        viewModel.createHauHauFolder()
+    }
+
     private fun checkHowManyRecordedFilesUserHave() {
         val recordsList = viewModel.getAllFilesFromRecordFolder()
-        //First file need to be "First file.txt"
-        recordsList.indices.forEach {
-            if (it > 0)
-                fileRecorded(it - 1)
-        }
+        //First file is file with name "First file.txt"
+        recordsList.indices.forEach { if (it > 0) fileRecorded(it - 1) }
     }
 
     private fun checkPermissions(index: Int) {

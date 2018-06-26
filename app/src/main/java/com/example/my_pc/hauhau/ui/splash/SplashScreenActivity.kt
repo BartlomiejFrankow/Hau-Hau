@@ -18,14 +18,13 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun splashWaiting() {
-        val interval = 1000 // 1 Second
         val handler = Handler()
         val runnable = Runnable {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
         }
-        handler.postAtTime(runnable, System.currentTimeMillis()+interval)
-        handler.postDelayed(runnable, interval.toLong())
+        handler.postAtTime(runnable, System.currentTimeMillis() + 1500)
+        handler.postDelayed(runnable, 1500)
     }
 
     override fun onPause() {
