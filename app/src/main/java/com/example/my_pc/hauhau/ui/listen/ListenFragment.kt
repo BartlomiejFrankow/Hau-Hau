@@ -14,6 +14,7 @@ import com.example.my_pc.hauhau.databinding.FragmentListeninBinding
 import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.home.HomeActivity
 import com.example.my_pc.hauhau.ui.home.HomeFragment
+import com.example.my_pc.hauhau.utils.helpers.CustomToast
 import kotlinx.android.synthetic.main.fragment_listenin.*
 import java.io.File
 import java.util.*
@@ -28,6 +29,8 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
     override fun provideViewModel(): ListenViewModel = ViewModelProviders.of(this).get(ListenViewModel::class.java)
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_listenin
+
+    val customToast = CustomToast()
 
     companion object {
         fun newInstance(): ListenFragment {
@@ -55,7 +58,7 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
 
     override fun onXClick() {
         viewModel.stopRecorder()
-        Toast.makeText(getBaseActivity(), getString(R.string.listening_stopped), Toast.LENGTH_SHORT).show()
+        customToast.showWhiteToast(getBaseActivity(), R.string.listening_stopped)
         getBaseActivity().replaceFragment(HomeFragment.newInstance(), false, TransactionAnim.FADE_OUT_LONG)
     }
 

@@ -34,7 +34,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.fragment_home
 
-    val customToast = CustomToast()
+    private val customToast = CustomToast()
 
     companion object {
         fun newInstance(): HomeFragment {
