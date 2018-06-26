@@ -7,5 +7,8 @@ import com.example.my_pc.hauhau.ui.base.BaseNavigator
  */
 
 interface ListenNavigator : BaseNavigator {
+
     fun updateTexts()
+    fun onXClick()
+
 }

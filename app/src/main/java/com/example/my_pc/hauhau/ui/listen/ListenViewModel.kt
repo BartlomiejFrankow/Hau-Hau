@@ -15,7 +15,7 @@ import java.util.*
 
 class ListenViewModel : BaseViewModel<ListenNavigator>() {
 
-    private var mRecorder: MediaRecorder? = null
+    private var recorder: MediaRecorder? = null
     var runner: Thread? = null
     private var ema = 0.0
     private val emaFilter = 0.6
@@ -30,9 +30,7 @@ class ListenViewModel : BaseViewModel<ListenNavigator>() {
                     while (runner != null) {
                         try {
                             sleep(100)
-                        } catch (e: InterruptedException) {
-                        }
-
+                        } catch (e: InterruptedException) { }
                         handler.post(updater)
                     }
                 }
@@ -42,22 +40,22 @@ class ListenViewModel : BaseViewModel<ListenNavigator>() {
     }
 
     fun startRecorder() {
-        if (mRecorder == null) {
-            mRecorder = MediaRecorder()
-            mRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
-            mRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            mRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            mRecorder!!.setOutputFile("/dev/null")
-            mRecorder!!.prepare()
-            mRecorder!!.start()
+        if (recorder == null) {
+            recorder = MediaRecorder()
+            recorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
+            recorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            recorder!!.setOutputFile("/dev/null")
+            recorder!!.prepare()
+            recorder!!.start()
         }
     }
 
     fun stopRecorder() {
-        if (mRecorder != null) {
-            mRecorder!!.stop()
-            mRecorder!!.release()
-            mRecorder = null
+        recorder?.let {
+            recorder!!.stop()
+            recorder!!.release()
+            recorder = null
         }
     }
 
@@ -66,7 +64,7 @@ class ListenViewModel : BaseViewModel<ListenNavigator>() {
     }
 
     private fun getAmplitude(): Double {
-        return if (mRecorder != null) mRecorder!!.maxAmplitude.toDouble()
+        return if (recorder != null) recorder!!.maxAmplitude.toDouble()
         else 0.0
     }
 
@@ -80,7 +78,7 @@ class ListenViewModel : BaseViewModel<ListenNavigator>() {
     private fun voiceReaction() {
         val recordsList = recordFilesList()
         if (soundDb(1.0).toInt() > 0.0) getNavigator().updateTexts()
-        if (soundDb(1.0).toInt() > 68) playAudio("", recordsList[Random().nextInt(recordsList.size - 1) + 1].toString())
+        if (soundDb(1.0).toInt() > 70) playAudio("", recordsList[Random().nextInt(recordsList.size - 1) + 1].toString())
     }
 
     private fun recordFilesList(): ArrayList<File> {
@@ -99,5 +97,7 @@ class ListenViewModel : BaseViewModel<ListenNavigator>() {
         mp.prepare()
         mp.start()
     }
+
+    fun onXClick(){ getNavigator().onXClick() }
 
 }

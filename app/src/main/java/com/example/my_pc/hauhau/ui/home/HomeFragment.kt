@@ -58,7 +58,7 @@ class HomeFragment : BaseFragment<HomeActivity, FragmentHomeBinding, HomeViewMod
     }
 
     override fun onFabAnimationEnd() {
-        getBaseActivity().replaceFragment(ListenFragment.newInstance(), true, TransactionAnim.FADE_OUT_LONG)
+        getBaseActivity().replaceFragment(ListenFragment.newInstance(), false, TransactionAnim.FADE_OUT_LONG)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

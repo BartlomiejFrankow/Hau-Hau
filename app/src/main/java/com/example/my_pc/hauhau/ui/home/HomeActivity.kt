@@ -2,6 +2,8 @@ package com.example.my_pc.hauhau.ui.home
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.os.Handler
+import android.widget.Toast
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
 import com.example.my_pc.hauhau.databinding.ActivityHomeBinding
@@ -17,9 +19,23 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>() {
     override fun getBindingVariable(): Int = BR.obj
     override fun getLayoutId(): Int = R.layout.activity_home
 
+    private var exit = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addFragment(HomeFragment.newInstance(), false)
+    }
+
+    override fun onBackPressed() {
+        if (exit) {
+            finishAndRemoveTask()
+            finishAffinity()
+        }
+        else {
+            Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_LONG).show()
+            exit = true
+            Handler().postDelayed({ exit = false }, (3 * 1000).toLong())
+        }
     }
 
 }

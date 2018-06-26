@@ -9,9 +9,11 @@ import android.view.View
 import android.widget.Toast
 import com.example.my_pc.hauhau.BR
 import com.example.my_pc.hauhau.R
+import com.example.my_pc.hauhau.commons.TransactionAnim
 import com.example.my_pc.hauhau.databinding.FragmentListeninBinding
 import com.example.my_pc.hauhau.ui.base.BaseFragment
 import com.example.my_pc.hauhau.ui.home.HomeActivity
+import com.example.my_pc.hauhau.ui.home.HomeFragment
 import kotlinx.android.synthetic.main.fragment_listenin.*
 import java.io.File
 import java.util.*
@@ -45,16 +47,16 @@ class ListenFragment : BaseFragment<HomeActivity, FragmentListeninBinding, Liste
         viewModel.startRecorder()
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.stopRecorder()
-        Toast.makeText(getBaseActivity(), getString(R.string.listening_stopped), Toast.LENGTH_SHORT).show()
-    }
-
     @SuppressLint("SetTextI18n")
     override fun updateTexts() {
             tv_sound_level?.text = viewModel.soundDb(1.0).roundToInt().toString() + " " + getString(R.string.dB)
             tv_listening?.visibility = View.VISIBLE
+    }
+
+    override fun onXClick() {
+        viewModel.stopRecorder()
+        Toast.makeText(getBaseActivity(), getString(R.string.listening_stopped), Toast.LENGTH_SHORT).show()
+        getBaseActivity().replaceFragment(HomeFragment.newInstance(), false, TransactionAnim.FADE_OUT_LONG)
     }
 
 }
